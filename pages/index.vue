@@ -1,6 +1,5 @@
 <template>
   <section class="section">
-    <h1>TST</h1>
     <div class="columns is-mobile">
       <card title="Free" icon="github">
         Open source on <a href="https://github.com/buefy/buefy"> GitHub </a>
