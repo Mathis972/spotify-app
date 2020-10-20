@@ -31,16 +31,33 @@ export default {
 
   // Modules (https://go.nuxtjs.dev/config-modules)
   modules: [
+    '@nuxtjs/axios',
     // https://go.nuxtjs.dev/buefy
-    'nuxt-buefy',
-    // https://go.nuxtjs.dev/axios
-    '@nuxtjs/axios'
+    'nuxt-buefy'
+
   ],
+  env: {
+    spotifyId: process.env.SPOTIFY_CLIENT_ID
+  },
 
   // Axios module configuration (https://go.nuxtjs.dev/config-axios)
   axios: {},
 
   // Build Configuration (https://go.nuxtjs.dev/config-build)
   build: {
+    extend (config, ctx) {
+      // Exécuter ESLint lors de la sauvegarde
+      if (ctx.isDev && ctx.isClient) {
+        config.module.rules.push({
+          enforce: "pre",
+          test: /\.(js|vue)$/,
+          loader: "eslint-loader",
+          exclude: /(node_modules)/,
+          options: {
+            fix: true
+          }
+        })
+      }
+    }
   }
 }

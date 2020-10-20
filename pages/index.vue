@@ -22,13 +22,13 @@
 </template>
 
 <script>
-import Card from "~/components/Card";
+import Card from '~/components/Card'
 
 export default {
-  name: "HomePage",
+  name: 'HomePage',
 
   components: {
-    Card,
-  },
-};
+    Card
+  }
+}
 </script>
