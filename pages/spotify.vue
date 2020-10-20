@@ -55,7 +55,7 @@ export default {
       process.env.environment === "development"
         ? (URL = "http:%2F%2Flocalhost:3000%2Fspotify")
         : (URL =
-          "https:%2F%2Fnuxt-spotify-stats.herokuapp.com0%2Fspotify%2Fcallback");
+          "https:%2F%2Fnuxt-spotify-stats.herokuapp.com0%2Fspotify");
       console.log(URL);
       console.log(process.env.environment);
       window.location = `https://accounts.spotify.com/authorize?client_id=${process.env.spotifyId}&redirect_uri=${URL}&scope=user-read-private%20user-read-email&response_type=token&state=123`;
