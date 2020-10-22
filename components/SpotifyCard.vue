@@ -1,14 +1,6 @@
 <template>
   <div class="card">
-    <div class="card-image">
-      <b-image
-        :src="user.images[0].url"
-        alt="The Buefy Logo"
-        ratio="300by200"
-        rounded="true"
-      ></b-image>
 
-    </div>
     <div class="card-content">
       <div class="media">
         <div class="media-left">
