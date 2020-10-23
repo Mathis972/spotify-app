@@ -48,10 +48,19 @@
     <div class="tile is-parent">
       <article class="tile is-child notification is-success">
         <div class="content">
+          <b-button
+            v-if="!lyricsObjectGenius"
+            size="is-large"
+            icon-left="text-box"
+            class="is-primary"
+            @click="searchLyricsGenius(user.currentTrack.item.artists[0].name,user.currentTrack.item.name)"
+          >
+            Get The Lyrics
+          </b-button>
           <p class="title">Tall tile</p>
           <p class="subtitle">With even more content</p>
           <div class="content">
-            <!-- Content -->
+            <p v-if="lyricsGenius">{{lyricsGenius}}</p>
           </div>
         </div>
       </article>
@@ -60,14 +69,47 @@
 </template>
 
 <script>
+import { getLyrics } from 'genius-lyrics-api';
 export default {
-
   props: {
     user: {
       type: Object,
       required: true
     }
   },
+  data () {
+    return {
+      lyricsObject: null,
+      lyricsGenius: null
+    }
+
+  },
+  methods: {
+    //only provides a portion of the lyrics
+    searchLyrics (artistName, songTitle) {
+      this.$axios.$get(`https://cors-anywhere.herokuapp.com/https://api.musixmatch.com/ws/1.1/matcher.lyrics.get?format=json&q_track=${songTitle}&q_artist=${artistName}&apikey=${process.env.lyricsId}`)
+        .then((resp) => this.lyricsObject = resp)
+        .catch((err) => console.log(err));
+    },
+    searchLyricsGenius (artistName, songTitle) {
+      const options = {
+        apiKey: process.env.geniusToken,
+        title: songTitle,
+        artist: artistName,
+        optimizeQuery: true
+      };
+      getLyrics(options).then((lyrics) => this.lyricsGenius = lyrics);
+
+      //GETS SONG FROM GENIUS
+
+      // this.$axios.$get(`https://cors-anywhere.herokuapp.com/http://api.genius.com/search?q=${encodeURI(songTitle + ' ' + artistName)}`, {
+      //   headers: { Authorization: "Bearer " + process.env.geniusToken }
+      // })
+      //   .then((resp) => this.lyricsObjectGenius = resp.response.hits[0].result)
+      //   .catch((err) => console.log(err));
+
+    }
+  }
 
 }
 </script>

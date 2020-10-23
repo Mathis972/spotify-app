@@ -38,7 +38,9 @@ export default {
   ],
   env: {
     spotifyId: process.env.SPOTIFY_CLIENT_ID,
-    environment: process.env.NODE_ENV
+    environment: process.env.NODE_ENV,
+    lyricsId: process.env.LYRICS_ID,
+    geniusToken: process.env.GENIUS_TOKEN
   },
 
   // Axios module configuration (https://go.nuxtjs.dev/config-axios)
