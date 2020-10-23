@@ -21,8 +21,8 @@
             </div>
           </article>
           <article class="tile is-child notification is-warning">
-            <p class="title">...tiles</p>
-            <p class="subtitle">Bottom tile</p>
+            <p class="title">User profile</p>
+            <p class="subtitle">Un petit plaisantin</p>
           </article>
         </div>
         <div class="tile is-parent">
@@ -37,7 +37,7 @@
       </div>
       <div class="tile is-parent">
         <article class="tile is-child notification is-danger">
-          <p class="title">Wide tile</p>
+          <p class="title">Your stats</p>
           <p class="subtitle">Aligned with the right tile</p>
           <div class="content">
             <!-- Content -->

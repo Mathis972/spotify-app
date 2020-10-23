@@ -1,7 +1,7 @@
 <template>
   <div>
     <section
-      v-if="!access_token"
+      v-if="!storedState"
       class="section"
     >
       <h2 class="title is-2">This app needs your authorization to work 😳👉👈</h2>
@@ -73,7 +73,7 @@ export default {
     if (this.access_token && (state == null || state !== this.storedState)) {
       alert('There was an error during the authentication');
     } else {
-      // localStorage.removeItem(this.stateKey);
+      localStorage.removeItem(this.stateKey);
       if (this.access_token) {
         await this.$axios
           .$get("https://api.spotify.com/v1/me", {
