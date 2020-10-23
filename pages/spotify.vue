@@ -25,9 +25,10 @@
         :user="user"
       ></spotifyCard> -->
       <spotifyTile
-        v-if="loaded"
+        v-if="loaded === true"
         :user="user"
       ></spotifyTile>
+      <h2 v-else>You're not listening to anything huh</h2>
     </section>
   </div>
 </template>
@@ -84,15 +85,20 @@ export default {
               .$get("https://api.spotify.com/v1/me/player/currently-playing", {
                 headers: { Authorization: "Bearer " + this.access_token }
               }).then(resp => {
-                this.user.currentTrack = resp;
-                this.loaded = true
+                if (resp) {
+                  this.user.currentTrack = resp;
+                  this.loaded = true
+                } else {
+                  console.log("Not Listening to anything atm")
+                }
+
               })
+              .catch(err => console.log(err))
 
           })
           .catch((err) => { console.log(err); localStorage.removeItem(this.stateKey) });
       }
     }
-    console.log("e")
 
 
   },
