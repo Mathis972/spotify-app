@@ -38,9 +38,24 @@
       <div class="tile is-parent">
         <article class="tile is-child notification is-danger">
           <p class="title">Your stats</p>
-          <p class="subtitle">Aligned with the right tile</p>
+          <p class="subtitle">Top Artists</p>
           <div class="content">
-            <!-- Content -->
+            <div class="columns is-mobile is-multiline is-centered is-one-third-tablet">
+              <div
+                v-for="topArtist of user.topArtists"
+                :key="topArtist.id"
+                class="column is-half-mobile custom-style"
+              >
+                <figure class="image is-64x64 ">
+                  <img
+                    :src="topArtist.images[0].url"
+                    alt="Placeholder image"
+                    class="is-rounded"
+                  >
+                </figure>
+                <p class="has-text-centered">{{topArtist.name}}</p>
+              </div>
+            </div>
           </div>
         </article>
       </div>
@@ -49,7 +64,7 @@
       <article class="tile is-child notification is-success">
         <div class="content">
           <b-button
-            v-if="!lyricsObjectGenius"
+            v-if="!lyricsGenius"
             size="is-large"
             icon-left="text-box"
             class="is-primary"
@@ -85,6 +100,10 @@ export default {
 
   },
   methods: {
+    //TODO statistiques des genres dominants pour créer graphique
+    GenresStats () {
+
+    },
     //only provides a portion of the lyrics
     searchLyrics (artistName, songTitle) {
       this.$axios.$get(`https://cors-anywhere.herokuapp.com/https://api.musixmatch.com/ws/1.1/matcher.lyrics.get?format=json&q_track=${songTitle}&q_artist=${artistName}&apikey=${process.env.lyricsId}`)
@@ -115,4 +134,10 @@ export default {
 </script>
 
 <style>
+.custom-style {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
 </style>

@@ -24,8 +24,9 @@
         v-if="loaded"
         :user="user"
       ></spotifyCard> -->
+      <h1 v-if="loaded === true && loadedStats === false">Loading your stats</h1>
       <spotifyTile
-        v-if="loaded === true"
+        v-if="loadedStats === true"
         :user="user"
       ></spotifyTile>
       <h2 v-else>You're not listening to anything huh</h2>
@@ -49,7 +50,8 @@ export default {
       stateKey: 'spotify_auth_state',
       access_token: '',
       error: '',
-      loaded: false
+      loaded: false,
+      loadedStats: false
     };
   },
   async mounted () {
@@ -87,22 +89,93 @@ export default {
               }).then(resp => {
                 if (resp) {
                   this.user.currentTrack = resp;
-                  this.loaded = true
+                  this.loaded = true;
                 } else {
                   console.log("Not Listening to anything atm")
                 }
-
               })
-              .catch(err => console.log(err))
-
+              .catch(err => console.log(err));
           })
           .catch((err) => { console.log(err); localStorage.removeItem(this.stateKey) });
+        let userSongsFromPlaylists = await this.getSongsFromUserPlaylists(await this.getUserPlaylists())
+        let artistsCountArray = this.countArtists(userSongsFromPlaylists);
+        let topArtistsCountArray = this.returnTopArtists(artistsCountArray, 5),
+          topArtistsCountArrayLength = topArtistsCountArray.length;
+
+        let TopArtistsArray = [];
+        for (let i = 0; i < topArtistsCountArrayLength; i++) {
+          TopArtistsArray.push(await this.getArtist(topArtistsCountArray[i].artistID));
+        }
+        this.user.topArtists = TopArtistsArray;
+        this.loadedStats = true;
       }
     }
 
 
   },
   methods: {
+    async getSongsFromUserPlaylists (playlists) {
+      let everySongArray = [];
+      for (let playlist of playlists.items) {
+        await this.$axios.$get(`https://api.spotify.com/v1/playlists/${playlist.id}/tracks`, {
+          headers: { Authorization: "Bearer " + this.access_token }
+        }).then(resp => {
+          for (let item of resp.items) {
+            everySongArray.push(item.track)
+          }
+        })
+      }
+      //REMOVING DUPLICATES
+
+      let duplicateFree = everySongArray.filter((v, i, a) => a.findIndex(t => (t.id === v.id)) === i);
+
+      return duplicateFree
+    },
+    countArtists (array) {
+      let dictionaryOfArtists = {};
+      let arrayOfArtistsCount = [];
+      let arrLength = array.length;
+
+      //creates Dictionary of artists
+      for (var i = 0; i < arrLength; i++) {
+        var artistId = array[i].artists[0].id;
+        dictionaryOfArtists[artistId] = dictionaryOfArtists[artistId] ? dictionaryOfArtists[artistId] + 1 : 1;
+      }
+      //Get keys (artists) from the dictionnary
+      let keys = Object.keys(dictionaryOfArtists),
+        dictionaryLength = keys.length;
+
+      //Loop over dictionnary, and push artist + count in an array to sort it 
+      for (let j = 0; j < dictionaryLength; j++) {
+        let key = keys[j];
+        let value = dictionaryOfArtists[key];
+        arrayOfArtistsCount.push({ "artistID": key, "count": value })
+      }
+
+      return arrayOfArtistsCount
+    },
+    returnTopArtists (array, numberOfArtists) {
+      return array.sort((a, b) => b.count - a.count).splice(0, numberOfArtists)
+    },
+    async getArtist (artistId) {
+      let artist = {};
+      await this.$axios.$get('https://api.spotify.com/v1/artists/' + artistId, {
+        headers: { Authorization: "Bearer " + this.access_token }
+      }).then(resp => artist = resp)
+        .catch(e => console.log(e));
+      console.log(artist)
+      return artist
+
+    },
+    async getUserPlaylists () {
+      let playlists = {};
+      await this.$axios
+        .$get("https://api.spotify.com/v1/me/playlists", {
+          headers: { Authorization: "Bearer " + this.access_token }
+        }).then(resp => playlists = resp)
+        .catch(err => console.log(err))
+      return playlists
+    },
     getHashParams () {
       var hashParams = {};
       var e,
