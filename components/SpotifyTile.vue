@@ -3,7 +3,10 @@
     <div class="tile is-vertical is-8">
       <div class="tile">
         <div class="tile is-parent is-vertical">
-          <article class="tile is-child notification is-primary">
+          <article
+            v-if="user.currentTrack"
+            class="tile is-child notification is-primary"
+          >
             <p class="title">Currently Playing</p>
             <div class="media is-align-items-center">
               <div class="media-left">
@@ -17,6 +20,20 @@
               </div>
               <div class="media-content">
                 <p class="subtitle is-clipped ">{{user.currentTrack.item.name}} by {{user.currentTrack.item.artists[0].name}} on {{user.currentTrack.item.album.name}}</p>
+              </div>
+            </div>
+          </article>
+          <article
+            v-else
+            class="tile is-child notification is-primary"
+          >
+            <p class="title">Currently Playing</p>
+            <div class="media is-align-items-center">
+              <div class="media-left">
+
+              </div>
+              <div class="media-content">
+                <p class="subtitle is-clipped ">Not playing anything right now :(</p>
               </div>
             </div>
           </article>
@@ -40,6 +57,7 @@
           <p class="title">Your stats</p>
           <p class="subtitle">Top Artists</p>
           <div class="content">
+
             <div class="columns is-mobile is-multiline is-centered is-one-third-tablet">
               <div
                 v-for="topArtist of user.topArtists"
@@ -56,6 +74,30 @@
                 <p class="has-text-centered">{{topArtist.name}}</p>
               </div>
             </div>
+            <b-button
+              size="is-large"
+              icon-right="chart-line-variant"
+              class="is-primary"
+              @click="show = !show"
+            >Show/Hide Stats</b-button>
+            <div v-if="show === true">
+              <div
+                v-for="genreStat of user.genreStats"
+                :key="genreStat.genre"
+              >
+                <h1>{{genreStat.genre}}</h1>
+                <b-progress
+                  :value="genreStat.count / user.totalTopArtistSongs * 100 "
+                  :precision="0"
+                  type="is-primary"
+                  show-value
+                  format="percent"
+                ></b-progress>
+
+              </div>
+
+            </div>
+
           </div>
         </article>
       </div>
@@ -73,7 +115,7 @@
             Get The Lyrics
           </b-button>
           <p class="title">Tall tile</p>
-          <p class="subtitle">With even more content</p>
+          <p class="subtitle">With even more content </p>
           <div class="content">
             <p v-if="lyricsGenius">{{lyricsGenius}}</p>
           </div>
@@ -95,15 +137,18 @@ export default {
   data () {
     return {
       lyricsObject: null,
-      lyricsGenius: null
+      lyricsGenius: null,
+      show: false
     }
 
   },
   methods: {
-    //TODO statistiques des genres dominants pour créer graphique
-    GenresStats () {
 
-    },
+    // getGenreStats (topArtists) {
+    //   this.$emit('get-genre-stats', topArtists);
+    // },
+    //TODO These lyrics related methods should be in the spotify.vue folder and the button should emit a call to these
+
     //only provides a portion of the lyrics
     searchLyrics (artistName, songTitle) {
       this.$axios.$get(`https://cors-anywhere.herokuapp.com/https://api.musixmatch.com/ws/1.1/matcher.lyrics.get?format=json&q_track=${songTitle}&q_artist=${artistName}&apikey=${process.env.lyricsId}`)

@@ -20,14 +20,11 @@
       v-else
       class="section"
     >
-      <!-- <spotifyCard
-        v-if="loaded"
-        :user="user"
-      ></spotifyCard> -->
       <h1 v-if="loaded === true && loadedStats === false">Loading your stats</h1>
       <spotifyTile
         v-if="loadedStats === true"
         :user="user"
+        @get-genre-stats="generateGenresStats"
       ></spotifyTile>
       <h2 v-else>You're not listening to anything huh</h2>
     </section>
@@ -71,7 +68,7 @@ export default {
     this.access_token = params.access_token;
     console.log(state, this.storedState);
 
-
+    //Check state
     if (this.access_token && (state == null || state !== this.storedState)) {
       alert('There was an error during the authentication');
     } else {
@@ -83,6 +80,7 @@ export default {
           })
           .then(resp => {
             this.user = resp;
+            //GET user's currently playing track 
             this.$axios
               .$get("https://api.spotify.com/v1/me/player/currently-playing", {
                 headers: { Authorization: "Bearer " + this.access_token }
@@ -97,16 +95,32 @@ export default {
               .catch(err => console.log(err));
           })
           .catch((err) => { console.log(err); localStorage.removeItem(this.stateKey) });
+
+        //get all songs from the user's playlists
         let userSongsFromPlaylists = await this.getSongsFromUserPlaylists(await this.getUserPlaylists())
+
+        //get artists and the number of songs they have in the user's playlists
         let artistsCountArray = this.countArtists(userSongsFromPlaylists);
+
+        //get the top (here 5) of artists with their ID of the user
         let topArtistsCountArray = this.returnTopArtists(artistsCountArray, 5),
           topArtistsCountArrayLength = topArtistsCountArray.length;
 
+        //get artists from the spotify API, add the number of songs they have on the user's playlists and count the total number of songs from the top artists
         let TopArtistsArray = [];
+        let totalTopArtistSongs = 0;
+
         for (let i = 0; i < topArtistsCountArrayLength; i++) {
-          TopArtistsArray.push(await this.getArtist(topArtistsCountArray[i].artistID));
+          let artistData = await this.getArtist(topArtistsCountArray[i].artistID);
+          artistData.numberOfSongsInUserPlaylists = topArtistsCountArray[i].count;
+          totalTopArtistSongs += topArtistsCountArray[i].count;
+          TopArtistsArray.push(artistData);
         }
         this.user.topArtists = TopArtistsArray;
+        this.user.totalTopArtistSongs = totalTopArtistSongs;
+
+        //create stats with artists genres to show it to the user
+        this.generateGenresStats(this.user.topArtists);
         this.loadedStats = true;
       }
     }
@@ -114,6 +128,46 @@ export default {
 
   },
   methods: {
+    generateGenresStats (artistsList) {
+
+      let arrLength = artistsList.length;
+      let dictionaryOfGenres = {},
+        genresCountArray = [];
+
+      //creates Dictionary of genres
+      for (var i = 0; i < arrLength; i++) {
+        let genreArrayLength = artistsList[i].genres.length;
+        for (let j = 0; j < genreArrayLength; j++) {
+          var genre = artistsList[i].genres[j];
+          dictionaryOfGenres[genre] = dictionaryOfGenres[genre] ? dictionaryOfGenres[genre] + artistsList[i].numberOfSongsInUserPlaylists : artistsList[i].numberOfSongsInUserPlaylists;
+        }
+
+      }
+      //Get keys (genres) from the dictionnary
+      let keys = Object.keys(dictionaryOfGenres),
+        dictionaryLength = keys.length;
+
+      //Loop over dictionnary, and push artist + count in an array to sort it 
+      for (let index = 0; index < dictionaryLength; index++) {
+        let key = keys[index];
+        let value = dictionaryOfGenres[key];
+        genresCountArray.push({ "genre": key, "count": value })
+      }
+      // let totalGenres = genresCountArray.reduce((prev, curr) => {
+      //   return { count: prev.count + curr.count }
+      // }).count;
+      // console.log(totalGenres)
+
+
+
+      //Recuperer nb de sons totaux, nb de genres 
+
+
+
+      this.user.genreStats = genresCountArray;
+      this.user.totalGenres = genresCountArray.length;
+      console.log(this.user)
+    },
     async getSongsFromUserPlaylists (playlists) {
       let everySongArray = [];
       for (let playlist of playlists.items) {
@@ -163,7 +217,6 @@ export default {
         headers: { Authorization: "Bearer " + this.access_token }
       }).then(resp => artist = resp)
         .catch(e => console.log(e));
-      console.log(artist)
       return artist
 
     },
