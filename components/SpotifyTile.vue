@@ -126,7 +126,10 @@
 </template>
 
 <script>
-import { getLyrics } from 'genius-lyrics-api';
+// import { getLyrics } from 'genius-lyrics-api';
+import { Song } from "genius-lyrics";
+// import Genius from "genius-lyrics";
+
 export default {
   props: {
     user: {
@@ -147,7 +150,8 @@ export default {
     // getGenreStats (topArtists) {
     //   this.$emit('get-genre-stats', topArtists);
     // },
-    //TODO These lyrics related methods should be in the spotify.vue folder and the button should emit a call to these
+    //TODO These lyrics related methods should be in the spotify.vue folder and the button should emit a call to theses
+
 
     //only provides a portion of the lyrics
     searchLyrics (artistName, songTitle) {
@@ -155,14 +159,34 @@ export default {
         .then((resp) => this.lyricsObject = resp)
         .catch((err) => console.log(err));
     },
-    searchLyricsGenius (artistName, songTitle) {
-      const options = {
-        apiKey: process.env.geniusToken,
-        title: songTitle,
-        artist: artistName,
-        optimizeQuery: true
-      };
-      getLyrics(options).then((lyrics) => this.lyricsGenius = lyrics);
+    async searchLyricsGenius (artistName, songTitle) {
+      // const Client = new Genius.Client(process.env.geniusToken);
+      // let tst = {}
+      const tst = await this.$axios.$get(`https://api.genius.com/search?q=${artistName + songTitle}&access_token=${process.env.geniusToken}`)
+        .then(resp => resp)
+
+      // const searches = await Client.songs.search(songTitle + artistName);
+      // console.log(searches)
+      console.log(tst)
+      console.log(tst.response[0])
+      const song = new Song(tst.response.hits[0].result)
+
+      // Pick first one
+      const firstSong = song;
+      console.log("About the Song:\n", firstSong, "\n");
+
+      // Ok lets get the lyrics
+      const lyrics = await firstSong.lyrics();
+      console.log("Lyrics of the Song:\n", lyrics, "\n");
+      this.lyricsGenius = lyrics
+
+      // const options = {
+      //   apiKey: process.env.geniusToken,
+      //   title: songTitle,
+      //   artist: artistName,
+      //   optimizeQuery: true
+      // };
+      // getLyrics(options).then((lyrics) => this.lyricsGenius = lyrics);
 
       //GETS SONG FROM GENIUS
 
