@@ -162,7 +162,7 @@ export default {
     async searchLyricsGenius (artistName, songTitle) {
       // const Client = new Genius.Client(process.env.geniusToken);
       // let tst = {}
-      const tst = await this.$axios.$get(`https://api.genius.com/search?q=${artistName + songTitle}&access_token=${process.env.geniusToken}`, {
+      const tst = await this.$axios.$get(`https://api.genius.com/search?q=${artistName + songTitle}`, {
         headers: { Authorization: "Bearer " + process.env.geniusToken }
       })
         .then(resp => resp)
