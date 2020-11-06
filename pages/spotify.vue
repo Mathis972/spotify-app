@@ -7,7 +7,7 @@
       <h2 class="title is-2">This app needs your authorization to work 😳👉👈</h2>
       <p v-if="error"> Please :(</p>
       <b-button
-        type="is-primary"
+        :style="{ background:this.$store.state.color.primary}"
         icon-right="check-outline"
         @click="connect"
       >
