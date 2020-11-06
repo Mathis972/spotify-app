@@ -1,7 +1,8 @@
 <template>
   <div>
     <nav
-      class="navbar header has-shadow is-primary"
+      class="navbar header has-shadow"
+      :style="{background :this.$store.state.color.primary}"
       role="navigation"
       aria-label="main navigation"
     >
@@ -37,7 +38,9 @@
           >
             <nuxt-link
               :to="item.to"
-              exact-active-class="is-active"
+              exact-active-class="active"
+              :style="cssClass"
+              @click.native="modifyColor(item.color)"
             >
               <b-icon :icon="item.icon" /> {{ item.title }}
             </nuxt-link>
@@ -53,27 +56,47 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex'
 export default {
-  data() {
+
+  data () {
     return {
       items: [
         {
           title: "Home",
           icon: "home",
-          to: { name: "index" }
+          to: { name: "index" },
+          color: '#6FD08C'
         },
         {
           title: "Inspire",
           icon: "lightbulb",
-          to: { name: "inspire" }
+          to: { name: "inspire" },
+          color: '#CC5A71'
         },
         {
           title: "Spotify",
           icon: "account-music",
-          to: { name: "spotify" }
+          to: { name: "spotify" },
+          color: "#1DB954"
         }
       ]
     };
-  }
+  },
+  computed: {
+    cssClass () {
+      return {
+        '--active-bg-color': this.$store.state.color.primary
+      }
+    }
+  },
+  methods: {
+    ...mapMutations({ modifyColor: 'color/modify' })
+  },
 };
 </script>
+<style scoped>
+.active {
+  background-color: var(--active-bg-color) !important;
+}
+</style>

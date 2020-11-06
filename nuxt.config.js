@@ -34,9 +34,24 @@ export default {
   modules: [
     '@nuxtjs/axios',
     // https://go.nuxtjs.dev/buefy
-    'nuxt-buefy'
+    'nuxt-buefy',
+    '@nuxtjs/proxy'
 
   ],
+  proxy: {
+    '/api/genius': {
+      target: 'https://api.genius.com',
+      pathRewrite: {
+        '^/api/genius': ''
+      }
+    },
+    '/api/site-genius': {
+      target: 'https://genius.com',
+      pathRewrite: {
+        '^/api/site-genius': ''
+      }
+    }
+  },
   env: {
     spotifyId: process.env.SPOTIFY_CLIENT_ID,
     environment: process.env.NODE_ENV,

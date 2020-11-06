@@ -161,22 +161,26 @@ export default {
     },
     async searchLyricsGenius (artistName, songTitle) {
       // const Client = new Genius.Client(process.env.geniusToken);
-      // let tst = {}
-      const tst = await this.$axios.$get(`https://api.genius.com/search?access_token=${process.env.geniusToken}&q=${artistName + songTitle}`)
-        .then(resp => resp)
-
-      // const searches = await Client.songs.search(songTitle + artistName);
-      // console.log(searches)
-      console.log(tst)
-      console.log(tst.response[0])
-      const song = new Song(tst.response.hits[0].result)
+      const searchResults = await this.$axios.$get(`/api/genius/search?access_token=${process.env.geniusToken}&q=${artistName + ' ' + songTitle}`, {
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Content-Type': 'application/json',
+        },
+      })
+        .then()
+        .catch(e => console.log(e))
 
       // Pick first one
-      const firstSong = song;
-      console.log("About the Song:\n", firstSong, "\n");
+      const song = new Song(searchResults.response.hits[0].result)
+
+
+      song.url = song.url.replace('https://genius.com', '/api/site-genius');
+
 
       // Ok lets get the lyrics
-      const lyrics = await firstSong.lyrics();
+      //TODO se renseigner sur comment utiliser nodejs avec nuxt pour scraper
+      const lyrics = await song.lyrics();
+      console.log(lyrics)
       console.log("Lyrics of the Song:\n", lyrics, "\n");
       this.lyricsGenius = lyrics
 

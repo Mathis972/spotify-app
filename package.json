@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@nuxtjs/axios": "^5.12.2",
+    "@nuxtjs/proxy": "^2.0.1",
     "bulma": "^0.9.1",
     "core-js": "^3.6.5",
     "genius-lyrics": "^4.0.0",
