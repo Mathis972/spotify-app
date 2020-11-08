@@ -33,6 +33,7 @@
 
 <script>
 // import spotifyCard from '../components/SpotifyCard'
+import { mapMutations } from 'vuex'
 import spotifyTile from "../components/SpotifyTile"
 export default {
   name: "SpotifyPage",
@@ -52,6 +53,7 @@ export default {
     };
   },
   async mounted () {
+    this.modifyColor("#1DB954");
     if (localStorage.getItem('spotify_auth_state')) {
       try {
 
@@ -128,6 +130,7 @@ export default {
 
   },
   methods: {
+    ...mapMutations({ modifyColor: 'color/modify' }),
     generateGenresStats (artistsList) {
 
       let arrLength = artistsList.length;

@@ -40,7 +40,6 @@
               :to="item.to"
               exact-active-class="active"
               :style="cssClass"
-              @click.native="modifyColor(item.color)"
             >
               <b-icon :icon="item.icon" /> {{ item.title }}
             </nuxt-link>
@@ -56,7 +55,6 @@
 </template>
 
 <script>
-import { mapMutations } from 'vuex'
 export default {
 
   data () {
@@ -65,20 +63,17 @@ export default {
         {
           title: "Home",
           icon: "home",
-          to: { name: "index" },
-          color: '#6FD08C'
+          to: { name: "index" }
         },
         {
           title: "Inspire",
           icon: "lightbulb",
-          to: { name: "inspire" },
-          color: '#CC5A71'
+          to: { name: "inspire" }
         },
         {
           title: "Spotify",
           icon: "account-music",
-          to: { name: "spotify" },
-          color: "#1DB954"
+          to: { name: "spotify" }
         }
       ]
     };
@@ -89,10 +84,7 @@ export default {
         '--active-bg-color': this.$store.state.color.primary
       }
     }
-  },
-  methods: {
-    ...mapMutations({ modifyColor: 'color/modify' })
-  },
+  }
 };
 </script>
 <style scoped>

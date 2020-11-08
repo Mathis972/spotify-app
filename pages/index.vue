@@ -34,6 +34,7 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex'
 import Card from "~/components/Card";
 
 export default {
@@ -41,6 +42,12 @@ export default {
 
   components: {
     Card
+  },
+  mounted () {
+    this.modifyColor("#6FD08C");
+  },
+  methods: {
+    ...mapMutations({ modifyColor: 'color/modify' }),
   }
 };
 </script>
